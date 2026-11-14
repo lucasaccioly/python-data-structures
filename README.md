@@ -19,7 +19,7 @@ Estruturas de dados e algoritmos de ordenação clássicos escritos do zero, sem
 | `sorting` | [`sorting.py`](src/dsa/sorting.py) | Selection, insertion, merge, quick e heap sort |
 | `Matrix` | [`matrix.py`](src/dsa/matrix.py) | Soma, transposta, multiplicação, somas por linha e coluna |
 
-As estruturas se comportam como as nativas: funcionam com `len()`, `for`, `in` e `[]`, e lançam os mesmos erros (`IndexError`, `KeyError`, `ValueError`).
+As estruturas se comportam como as nativas: funcionam com `len()`, `for` e `in`, aceitam `[]` onde faz sentido (`DynamicArray`, `HashMap`, `Matrix`) e lançam os mesmos erros (`IndexError`, `KeyError`, `ValueError`).
 
 ```python
 from dsa import HashMap, Queue
@@ -43,7 +43,8 @@ quick_sort([5, 2, 8, 1], reverse=True)  # [8, 5, 2, 1]
 |---|---|---|
 | `DynamicArray` | `append` | O(1) amortizado |
 | | `insert`, `pop(i)`, `remove` | O(n) |
-| | `[i]`, `pop()` do fim | O(1) |
+| | `[i]`, `[i] = x`, `pop()` do fim | O(1) |
+| | `in`, `index` | O(n) |
 | `LinkedList` | `append`, `appendleft`, `pop`, `popleft` | O(1) |
 | | `remove`, `in` | O(n) |
 | `Stack` | `push` | O(1) amortizado |
@@ -51,7 +52,7 @@ quick_sort([5, 2, 8, 1], reverse=True)  # [8, 5, 2, 1]
 | `Queue` | `enqueue` | O(1) amortizado |
 | | `dequeue`, `peek`, `peek_last` | O(1) |
 | `HashMap` | `get`, `set`, `delete`, `in` | O(1) em média, O(n) no pior caso |
-| `Matrix` | `+`, `transpose` | O(n·m) |
+| `Matrix` | `+`, `transpose`, `row_sums`, `col_sums` | O(n·m) |
 | | `@` (n×m vezes m×p) | O(n·m·p) |
 
 | Ordenação | Melhor | Médio | Pior | Espaço extra | Estável |
@@ -72,7 +73,7 @@ Todas as funções de ordenação devolvem uma lista nova (a entrada não é alt
 - **Tabela hash com 75% de ocupação.** Passou de 3/4 da capacidade, a tabela dobra e redistribui as chaves. Isso mantém as listas de cada posição curtas (busca O(1) em média). Como a capacidade dobra, o custo da redistribuição dividido pelas inserções é O(1).
 - **Quick sort que não estoura a pilha.** Pivô aleatório (entrada já ordenada não vira O(n²)), partição em três partes, "menor / igual / maior" (muitos repetidos não degradam) e recursão só na parte menor, com um laço na maior, o que limita a profundidade a O(log n). Há um teste com 10 mil itens já ordenados, invertidos e todos iguais.
 - **Estabilidade também no `reverse`.** Em `insertion_sort` e `merge_sort`, itens iguais mantêm a ordem original nos dois sentidos, como no `sorted` do Python.
-- **Testes contra as nativas.** Cada estrutura roda numa máquina de estados do [Hypothesis](https://hypothesis.readthedocs.io/), que aplica sequências aleatórias de operações nela e na equivalente nativa (`list`, `deque`, `dict`, `sorted`) e confere que as duas sempre terminam iguais. Quando algo diverge, o Hypothesis reduz o caso ao menor exemplo que falha.
+- **Testes contra as nativas.** Cada estrutura com estado (`DynamicArray`, `LinkedList`, `Stack`, `Queue`, `HashMap`) roda numa máquina de estados do [Hypothesis](https://hypothesis.readthedocs.io/), que aplica sequências aleatórias de operações nela e na equivalente nativa (`list`, `deque`, `dict`) e confere que as duas sempre terminam iguais. A ordenação e a `Matrix` usam testes de propriedade contra `sorted` e `sum` com entradas geradas. Quando algo diverge, o Hypothesis reduz o caso ao menor exemplo que falha.
 
 ## Exemplos
 
@@ -99,7 +100,7 @@ python -m venv .venv
 source .venv/bin/activate        # no Windows: .venv\Scripts\activate
 pip install -e ".[dev]"
 
-pytest                           # 53 testes
+pytest                           # 54 testes
 ruff check . && ruff format --check .
 mypy                             # modo estrito
 ```

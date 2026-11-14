@@ -44,6 +44,37 @@ def test_queue_grows_after_wraparound() -> None:  # Review Focus 4
     assert len(q) == 7
 
 
+class StackVsList(RuleBasedStateMachine):
+    def __init__(self) -> None:
+        super().__init__()
+        self.model: list[int] = []
+        self.sut = Stack[int]()
+
+    @rule(x=st.integers())
+    def push(self, x: int) -> None:
+        self.model.append(x)
+        self.sut.push(x)
+
+    @precondition(lambda self: len(self.model) > 0)
+    @rule()
+    def pop(self) -> None:
+        assert self.sut.pop() == self.model.pop()
+
+    @precondition(lambda self: len(self.model) > 0)
+    @rule()
+    def peek(self) -> None:
+        assert self.sut.peek() == self.model[-1]
+
+    @invariant()
+    def same_order(self) -> None:
+        assert len(self.sut) == len(self.model)
+        assert bool(self.sut) == bool(self.model)
+        assert list(self.sut) == self.model[::-1]  # top to bottom
+
+
+TestStack = StackVsList.TestCase
+
+
 class QueueVsDeque(RuleBasedStateMachine):
     def __init__(self) -> None:
         super().__init__()
