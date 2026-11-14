@@ -1,0 +1,35 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "python-data-structures"
+version = "1.0.0"
+description = "Classic data structures and sorting algorithms written from scratch, typed and property-tested."
+readme = "README.md"
+requires-python = ">=3.12"
+license = "MIT"
+authors = [{ name = "Lucas Accioly" }]
+dependencies = []
+
+[project.optional-dependencies]
+dev = ["pytest", "hypothesis", "ruff", "mypy"]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/dsa"]
+
+[tool.pytest.ini_options]
+pythonpath = [".", "src"]
+testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 110
+extend-exclude = ["docs"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "SIM"]
+
+[tool.mypy]
+strict = true
+files = ["src", "examples", "tests"]
+mypy_path = "src"
